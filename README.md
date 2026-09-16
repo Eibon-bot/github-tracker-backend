@@ -53,4 +53,41 @@ estan mal.
 
 ## Docker
 
-Pendiente: se documenta al montar el docker-compose.
+El compose levanta la API y PostgreSQL. Son dos archivos:
+
+- `docker-compose.yml` define los servicios tal como corren en el servidor.
+- `docker-compose.override.yml` lo aplica Docker automaticamente en local: monta
+  el codigo dentro del contenedor, arranca en modo watch y publica el puerto de
+  la base para poder conectarse con un cliente grafico.
+
+### En local
+
+```bash
+cp .env.example .env
+docker compose up -d
+```
+
+Levanta ambos servicios en modo desarrollo con recarga en caliente: al guardar
+un archivo el contenedor se reinicia solo, sin reconstruir la imagen. La API
+queda en `http://localhost:3000/api` y la base en `localhost:5432`.
+
+```bash
+docker compose logs -f api    # ver los registros
+docker compose down           # parar, conservando los datos
+docker compose down -v        # parar y borrar tambien la base
+```
+
+### Como corre en el servidor
+
+Ignorando el override, que es lo que se hace en el Fedora Server:
+
+```bash
+docker compose -f docker-compose.yml up -d --build
+```
+
+Ahi la API corre desde la imagen de produccion: compilada, sin dependencias de
+desarrollo, con `NODE_ENV=production` y como usuario sin privilegios. Solo
+cambian las variables del `.env`.
+
+La API no arranca hasta que PostgreSQL responde al healthcheck, y los datos
+viven en un volumen que sobrevive a `docker compose down`.
