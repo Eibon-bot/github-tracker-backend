@@ -5,4 +5,7 @@ export const envSchema = Joi.object({
     .valid('development', 'production', 'test')
     .default('development'),
   PORT: Joi.number().port().default(3000),
+  DATABASE_URL: Joi.string()
+    .uri({ scheme: ['postgres', 'postgresql'] })
+    .required(),
 }).options({ abortEarly: false });

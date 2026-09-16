@@ -5,6 +5,7 @@ COPY package.json package-lock.json ./
 FROM base AS development
 RUN npm ci
 COPY . .
+USER node
 CMD ["npm", "run", "start:dev"]
 
 FROM base AS build
@@ -18,5 +19,6 @@ ENV NODE_ENV=production
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/drizzle ./drizzle
 USER node
 CMD ["node", "dist/main.js"]
