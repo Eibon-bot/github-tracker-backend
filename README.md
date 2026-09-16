@@ -51,6 +51,30 @@ estan mal.
 | `npm run test` | Pruebas unitarias |
 | `npm run test:e2e` | Pruebas de extremo a extremo |
 
+## Base de datos
+
+Drizzle ORM sobre PostgreSQL, con el driver `pg`. La conexion sale de
+`DATABASE_URL`, que se valida al arrancar como cualquier otra variable.
+
+Las migraciones **se aplican solas al arrancar la aplicacion**: si hay alguna
+pendiente, corre antes de que la API acepte peticiones. En el servidor no hay
+ningun paso extra que recordar.
+
+```bash
+npm run db:generate   # genera una migracion a partir de los cambios del esquema
+npm run db:migrate    # aplica las pendientes a mano, sin arrancar la app
+npm run db:studio     # abre el visor de datos de Drizzle
+```
+
+El esquema vive en `src/database/schema/` y las migraciones generadas en
+`drizzle/`, ambos versionados. Nunca se editan las migraciones a mano: se
+cambia el esquema y se regenera.
+
+`DATABASE_URL` apunta a `localhost` en el `.env` y a `db` dentro del compose.
+Son dos vistas de la misma base: `localhost` es como la ves desde tu maquina
+(para `drizzle-kit` o para correr la API fuera de Docker) y `db` es el nombre
+del servicio en la red interna de Docker.
+
 ## Docker
 
 El compose levanta la API y PostgreSQL. Son dos archivos:
